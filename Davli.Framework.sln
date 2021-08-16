@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31105.61
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Davli.Framework", "Davli.Framework\Davli.Framework.csproj", "{FEE295B7-8296-40A0-862E-05BC0AFF0080}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Davli.Framework.SampleApi", "Davli.Framework.SampleApi\Davli.Framework.SampleApi.csproj", "{E33A5CA6-4C47-44F0-B3D7-17D905AF094E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D6BBD400-7519-478C-B2BB-E04F093B5290}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FEE295B7-8296-40A0-862E-05BC0AFF0080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEE295B7-8296-40A0-862E-05BC0AFF0080}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEE295B7-8296-40A0-862E-05BC0AFF0080}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEE295B7-8296-40A0-862E-05BC0AFF0080}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E33A5CA6-4C47-44F0-B3D7-17D905AF094E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E33A5CA6-4C47-44F0-B3D7-17D905AF094E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E33A5CA6-4C47-44F0-B3D7-17D905AF094E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E33A5CA6-4C47-44F0-B3D7-17D905AF094E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1B16F4B5-0959-42BE-99C7-CEF84AAEEC21}
+	EndGlobalSection
+EndGlobal
