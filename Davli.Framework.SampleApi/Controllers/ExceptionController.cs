@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Davli.Framework.SampleApi.Controllers
@@ -34,6 +35,16 @@ namespace Davli.Framework.SampleApi.Controllers
         public void BusinessException()
         {
             throw new DavliBusinessException("Sample Business exception", "Nothing",new DavliException("Samle inner exception"));
+        }
+        //********************************************************************************************************
+        /// <summary>
+        /// sample DavliExceptionExternalService
+        /// </summary>
+        [HttpGet]
+        [Route("external-service-exception")]
+        public void ExternalServiceException()
+        {
+            throw new DavliExceptionExternalService("Sample ExternalServiceException exception.", HttpStatusCode.RequestTimeout);
         }
         //********************************************************************************************************
     }
