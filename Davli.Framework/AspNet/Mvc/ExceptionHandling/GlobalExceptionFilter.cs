@@ -160,6 +160,18 @@ namespace Davli.Framework.AspNet.Mvc.ExceptionHandling
                 return HttpStatusCode.BadRequest;
             else if (exception is DavliExceptionBadRequest)
                 return HttpStatusCode.BadRequest;
+            else if (exception is DavliExceptionExternalService)
+                return ((DavliExceptionExternalService)exception).HttpStatusCode;
+            else if (exception is DavliException)
+            {
+                //If there is HttpStatusCode property in exception, return its value.
+                var property = exception.GetType().GetProperties().FirstOrDefault(x => x.PropertyType == typeof(HttpStatusCode));
+                if (property != null)
+                {
+                    HttpStatusCode httpStatusCode = (HttpStatusCode)property.GetValue(exception, null);
+                    return httpStatusCode;
+                }
+            }
             return HttpStatusCode.InternalServerError;
         }
         //************************************************************************************************
