@@ -36,6 +36,7 @@ namespace Davli.Framework.SampleApi.Services.Impl
             if (user == null)
                 throw new DavliExceptionNotFound("User not found.");
             await _unitOfWork.GenericRepository<User>().RemoveAsync(x => x.Id == userId);
+            await _unitOfWork.SaveAsync();
         }
         //*********************************************************************************************************
         public async Task<List<UserModel>> GetAllUserAsync()
