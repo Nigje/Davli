@@ -11,6 +11,26 @@ Davli is a framework based on ASP.Net Core for web projects with requirements su
 - MinIO
 - SQL Server
 
+
+
+### Todo:
+
+- Standard Repository Implementation example.
+
+- Autofac documentation.
+
+- Minio documentation.
+
+- Settings documentation.
+
+- Filter documentation.
+
+- Add Docker and cocker-compose.yml
+
+- Add Serilog, Elasticsearch, kibana, enginx
+
+  
+
 ## Integrate with a project
 
 Davli is designed for ASP.Net Web API applications and there is a sample project that you can analyze Davli. To integrate it with your project you should do some changes in `Program.cs` and `Sturtup.cs`. At the first step, you should register `AutofacServiceProviderFactory` by using it as the following in the `Program.cs` file to integrate `Autofac` with project. 
