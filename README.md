@@ -17,23 +17,23 @@ Davli is a framework based on ASP.Net Core for web projects with requirements su
 
 - Standard Repository Implementation example.
 
-- Autofac documentation.
-
 - Minio documentation.
 
 - Settings documentation.
 
 - Filter documentation.
 
-- Add Docker and cocker-compose.yml
+- Add Automapper.
 
-- Add Serilog, Elasticsearch, kibana, enginx
+- Add Docker and cocker-compose.yml.
+
+- Add Serilog, Elasticsearch, Kibana, Fluentd, Nginx.
 
   
 
 ## Integrate with a project
 
-Davli is designed for ASP.Net Web API applications and there is a sample project that you can analyze Davli. To integrate it with your project you should do some changes in `Program.cs` and `Sturtup.cs`. At the first step, you should register `AutofacServiceProviderFactory` by using it as the following in the `Program.cs` file to integrate `Autofac` with project. 
+Davli is designed for ASP.Net Web API applications and there is a sample project that you can debug Davli. To integrate it with your project you should do some changes in `Program.cs` and `Sturtup.cs`. At the first step, you should register `AutofacServiceProviderFactory` by using it as the following in the `Program.cs` file to integrate `Autofac` with project. 
 
 ```c#
 public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -236,6 +236,119 @@ dotnet ef database update --project Davli.Framework.SampleApi
 ```
 
 
+
+## Autofac
+
+[Autofac](https://autofac.org/) is an addictive [Inversion of Control container](http://martinfowler.com/articles/injection.html) for .NET Core, ASP.NET Core. It manages the dependencies between classes so that **applications stay easy to change as they grow** in size and complexity. To integrate it with your project you should do some changes in `Program.cs` and `Sturtup.cs`. At the first step, you should register `AutofacServiceProviderFactory` by using it as the following in the `Program.cs` file to integrate `Autofac` with project. 
+
+```c#
+public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+             .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+```
+
+After that, add the following function to `Startup.cs` to define dependency injection roles. To register Davli class you have to register `DavliDIModule` and for the current project (for example `Sample.Api`) you have to register `DIModule`.  `DIModule` and `DavliDIModule` have the same content that you can change and use just one of them.
+
+```C#
+public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule(new DIModule());
+            builder.RegisterModule(new DavliDIModule());
+        }
+```
+
+Resolving services has the following life times and for each of them we have defines an specific Interface.
+
+- **Single Instance**: Single Instance is based on singleton pattern and create an instance of class and share same instance between all dependencies. We use `ISingletonLifetime` to sign classes that are needed to be singleton.
+
+  > This is also known as ‘singleton.’ Using single **instance** scope, **one instance is returned from all \**request\**s in the root and all nested scopes**.
+
+- **Instance Per Request**:  InstancePerRequest resolves dependencies per request. It means during processing a request if a service is injected and within inner dependencies, again the service is injected, both services refer to the same instance. We use `IScopedLifetime` to sign classes that are needed to be InstancePerRequest.
+
+  > Some application types naturally lend themselves to “**request**” type semantics, for example ASP.NET [web forms](https://autofac.readthedocs.io/en/latest/integration/webforms.html) and [MVC](https://autofac.readthedocs.io/en/latest/integration/mvc.html) applications. In these application types, it’s helpful to have the ability to have a sort of “singleton **per** request.”
+
+- **Instance Per Dependency**: InstancePerDependency create a new instance per injection. We use `ITransientLifetime` to sign classes that are needed to be InstancePerRequest.
+
+  > Also called ‘transient’ or ‘factory’ in other containers. Using **per**-dependency scope, **a unique \**instance\** will be returned from each \**request\** for a service.**
+
+
+
+The following code indicates the `UserService` is implementation of `IUserService` and is signed with `ITransientLifetime` interface. When `IUserService` is injected to another class, Autofac due to `ITransientLifetime` creates a new instance of `UserService`. If instead of `ITransientLifetime`, `UserService` had been signed with `ISingletonLifetime`, the existing instance was injected (just once create a new instance).
+
+```c#
+public class UserService : IUserService, ITransientLifetime
+{
+	//Implementation.
+}
+```
+
+```C#
+public class UserController : DavliControllerBase
+ {
+		private readonly IUserService _userService;
+    
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
+}
+```
+
+
+
+`DavliDIModule` and `DIModule` are classes we have used to define `ITransientLifetime`, `IScopedLifetime`, and `ISingletonLifetime` behavior. Both of them are derived from `Autofac.Module` and override `Load` function. ThisAssembly says to Autofac to search current assembly and impose your role on classes that are derived from `ITransientLifetime`, `IScopedLifetime`, and `ISingletonLifetime`. DavliDIModule exists in the DavliFramework project and only registers roles for the DavliFramework project's classes. Also, DIModule exists in the current project (Sample.Api) and registers roles there.
+
+```c#
+public class DavliDIModule : Module
+{
+    protected override void Load(ContainerBuilder builder)
+    {
+        builder.RegisterAssemblyTypes(ThisAssembly)
+            .Where(x => x.IsAssignableTo<ITransientLifetime>()).AsSelf().AsImplementedInterfaces()
+            .InstancePerDependency();
+
+        builder.RegisterAssemblyTypes(ThisAssembly)
+            .Where(x => x.IsAssignableTo<IScopedLifetime>()).AsSelf().AsImplementedInterfaces()
+            .InstancePerRequest();
+
+        builder.RegisterAssemblyTypes(ThisAssembly)
+            .Where(x => x.IsAssignableTo<ISingletonLifetime>()).AsSelf().AsImplementedInterfaces()
+            .SingleInstance();
+    }
+}
+```
+
+
+
+Also, instead of registering both DavliDIModule and DIModule, you can ignore DavliDIModule and change DIModule as below. The following code says to Autofac search all *.dll in the build directory and imposes your role on classes that are derived from `ITransientLifetime`, `IScopedLifetime`, and `ISingletonLifetime` (not recommended).
+
+```c#
+public class DIModule : Module
+{
+    protected override void Load(ContainerBuilder builder)
+    {
+		var assemblies = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll", SearchOption.TopDirectoryOnly)
+               .Select(Assembly.LoadFrom);
+
+		builder.RegisterAssemblyTypes(assemblies.ToArray())
+			.Where(x => x.IsAssignableTo<ITransientLifetime>()).AsSelf().AsImplementedInterfaces().InstancePerDependency();
+
+		builder.RegisterAssemblyTypes(assemblies.ToArray())
+			.Where(x => x.IsAssignableTo<IScopedLifetime>()).AsSelf().AsImplementedInterfaces().InstancePerRequest();
+
+		builder.RegisterAssemblyTypes(assemblies.ToArray())
+			.Where(x => x.IsAssignableTo<ISingletonLifetime>()).AsSelf().AsImplementedInterfaces().SingleInstance();
+    }
+
+}
+```
+
+You can use `ContainerBuilder` in `Startup.ConfigureContainer` to register new roles and types. Also, you can use ASP.NET Core Ioc in `Startup.ConfigureServices` function.
 
 ## Exceptions
 
