@@ -1,15 +1,5 @@
 # Davli 
 
-## Engineering documentation
-
-The following documents describe the original .NET 5 architecture and proposed improvements. This documentation update does not add tests, CI configuration, demo scripts, or application changes.
-
-- [Meaningful tests, CI, and reproducible demo plan](docs/TESTS_AND_CI.md)
-- [Current-source demo walkthrough and prerequisites](docs/DEMO.md)
-- [Architecture decisions and proposed improvements](docs/ARCHITECTURE_DECISIONS.md)
-- [Engineering case study](#davli-engineering-case-study)
-
-
 Davli is a framework based on ASP.Net Core for web projects with requirements such as high-performance, scalability, reliability, extensibility. Davli uses the update and famous technologies in ASP.Net Core. Davli is the summary of different frameworks. The following is a list of technologies that are used in Davli. I'm going to regularly update the document in the next commits.
 
 ### Technologies:
@@ -43,7 +33,7 @@ Davli is a framework based on ASP.Net Core for web projects with requirements su
 
 ## Davli engineering case study
 
-This case study describes the original source. Proposed tests and improvements are documented separately; no implementation changes are included in this update.
+This case study describes the original .NET 5 source and its design tradeoffs. The improvements discussed below are proposals; no implementation changes are included in this documentation update.
 
 ### Architecture
 
@@ -76,7 +66,7 @@ Storage is a separate framework capability; the user CRUD example does not demon
 | Storage | [MinioFileServer](Davli.Framework/Services/Impl/MinioFileServer.cs) | An adapter keeps vendor operations behind a contract; stream behavior requires integration coverage. |
 | Configuration | [OptionService](Davli.Framework/Options/OptionService.cs) | Reflection reduces binding boilerplate; static mutable state makes repeated hosts harder to isolate. |
 
-See [architecture decisions and proposed improvements](docs/ARCHITECTURE_DECISIONS.md) for the rationale and compatibility considerations, and [the tests and CI plan](docs/TESTS_AND_CI.md) for the evidence needed to verify changes.
+Meaningful integration tests should verify CRUD persistence, missing-user responses, audit fields, dependency lifetimes, and safe production errors. A future CI workflow should build the solution, run those tests, and verify a reproducible demo from a clean checkout.
 
 ### Suggested interview walkthrough
 
@@ -84,7 +74,7 @@ See [architecture decisions and proposed improvements](docs/ARCHITECTURE_DECISIO
 2. Trace a create-user request through the controller, service, repository, and save operation.
 3. Explain missing-user responses and the proposed integration tests.
 4. Discuss one concrete limitation, such as header-derived audit identity or DI lifetimes, and how a regression test would expose it.
-5. Once a reproducible demo is implemented, show the [CRUD walkthrough](docs/DEMO.md) with synthetic data.
+5. Once a reproducible demo is implemented, demonstrate creating, reading, updating, and deleting a user through Swagger with synthetic data.
 
 The source supports discussing these design choices. It does not establish commercial usage, performance improvements, production reliability, or a passing automated suite in the restored repository.
 
