@@ -1,5 +1,15 @@
 # Davli 
 
+## Engineering documentation
+
+The following documents describe the original .NET 5 architecture and proposed improvements. This documentation update does not add tests, CI configuration, demo scripts, or application changes.
+
+- [Meaningful tests, CI, and reproducible demo plan](docs/TESTS_AND_CI.md)
+- [Current-source demo walkthrough and prerequisites](docs/DEMO.md)
+- [Architecture decisions and proposed improvements](docs/ARCHITECTURE_DECISIONS.md)
+- [Engineering case study](docs/CASE_STUDY.md)
+
+
 Davli is a framework based on ASP.Net Core for web projects with requirements such as high-performance, scalability, reliability, extensibility. Davli uses the update and famous technologies in ASP.Net Core. Davli is the summary of different frameworks. The following is a list of technologies that are used in Davli. I'm going to regularly update the document in the next commits.
 
 ### Technologies:
